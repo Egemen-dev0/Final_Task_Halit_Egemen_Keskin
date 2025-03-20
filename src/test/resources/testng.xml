@@ -4,17 +4,17 @@
     <test name="Chrome Tests">
         <parameter name="browser" value="chrome"/>
         <classes>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithEmptyCredentialsTest"/>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithEmptyPasswordTest"/>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithValidCredentialsTest"/>
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithEmptyCredentialsTest"/>
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithEmptyPasswordTest"/>
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithValidCredentialsTest"/>
         </classes>
     </test>
     <test name="Edge Tests">
         <parameter name="browser" value="edge"/>
         <classes>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithEmptyCredentialsTest"/>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithEmptyPasswordTest"/>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithValidCredentialsTest"/>
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithEmptyCredentialsTest"/>
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithEmptyPasswordTest"/>
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithValidCredentialsTest"/>
         </classes>
     </test>
 </suite> 

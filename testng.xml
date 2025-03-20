@@ -3,8 +3,8 @@
     <parameter name="browser" value="chrome" />
     <test name="EmptyCredentialsTest">
         <classes>
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithEmptyCredentialsTest" />
-            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.LoginWithEmptyPasswordTest" />
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithEmptyCredentialsTest" />
+            <class name="com.epam.Final_Task_Halit_Egemen_Keskin.Tests.TestNG.LoginWithEmptyPasswordTest" />
         </classes>
     </test>
 </suite> 

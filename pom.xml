@@ -29,6 +29,9 @@
 	<properties>
 		<java.version>17</java.version>
 		<cucumber.version>7.0.0</cucumber.version>
+		<skip.testng>false</skip.testng>
+		<skip.junit>false</skip.junit>
+		<skip.cucumber>false</skip.cucumber>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -143,7 +146,7 @@
        <version>3.2.5</version>
        <configuration>
            <suiteXmlFiles>
-               <suiteXmlFile>testng.xml</suiteXmlFile>
+               <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
            </suiteXmlFiles>
            <testFailureIgnore>true</testFailureIgnore>
            <argLine>-Dtest.browser=chrome</argLine>
@@ -166,6 +169,47 @@
                <version>3.2.5</version>
            </dependency>
        </dependencies>
+       <executions>
+           <execution>
+               <id>testng-tests</id>
+               <phase>test</phase>
+               <goals>
+                   <goal>test</goal>
+               </goals>
+               <configuration>
+                   <suiteXmlFiles>
+                       <suiteXmlFile>src/test/resources/testng.xml</suiteXmlFile>
+                   </suiteXmlFiles>
+                   <skipTests>${skip.testng}</skipTests>
+               </configuration>
+           </execution>
+           <execution>
+               <id>junit-tests</id>
+               <phase>test</phase>
+               <goals>
+                   <goal>test</goal>
+               </goals>
+               <configuration>
+                   <includes>
+                       <include>**/Tests/Junit/JUnitTestRunner.java</include>
+                   </includes>
+                   <skipTests>${skip.junit}</skipTests>
+               </configuration>
+           </execution>
+           <execution>
+               <id>cucumber-tests</id>
+               <phase>test</phase>
+               <goals>
+                   <goal>test</goal>
+               </goals>
+               <configuration>
+                   <includes>
+                       <include>**/Tests/Cucumber/CucumberRunner.java</include>
+                   </includes>
+                   <skipTests>${skip.cucumber}</skipTests>
+               </configuration>
+           </execution>
+       </executions>
    </plugin>
 		</plugins>
 	</build>
