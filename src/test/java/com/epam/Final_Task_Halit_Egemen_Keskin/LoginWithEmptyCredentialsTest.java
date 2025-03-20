@@ -22,11 +22,12 @@ public class LoginWithEmptyCredentialsTest extends BaseTest {
                 .enterPassword("test_password")
                 .clearUsername()
                 .clearPassword()
+                .refreshPage()
                 .clickLoginButtonExpectingError();
 
         
         // Click login directly without entering anything
-        loginPage.clickLoginButtonExpectingError();
+      //  loginPage.clickLoginButtonExpectingError();
         
         // Then I should see an error message
         String errorMessage = loginPage.getErrorMessage();

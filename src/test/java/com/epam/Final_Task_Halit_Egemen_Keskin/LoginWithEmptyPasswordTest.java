@@ -21,7 +21,7 @@ public class LoginWithEmptyPasswordTest extends BaseTest {
         loginPage.enterUsername("standard_user")
                 .enterPassword("secret_sauce")
                 .clearPassword()
-                .clickLoginButtonExpectingError();
+                 .clickLoginButtonExpectingError();
         */
         
         // Enter only username, leave password empty

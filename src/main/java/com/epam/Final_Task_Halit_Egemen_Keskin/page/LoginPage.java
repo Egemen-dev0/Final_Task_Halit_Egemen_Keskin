@@ -9,6 +9,7 @@ import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.openqa.selenium.JavascriptExecutor;
+import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 
@@ -50,14 +51,24 @@ public class LoginPage extends BasePage {
     public LoginPage clearUsername() {
         try {
 
-            ((JavascriptExecutor) driver).executeScript("arguments[0].value = '';", usernameInput);
+           usernameInput.clear();
+
+//            ((JavascriptExecutor) driver).executeScript(
+//                "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input'));", usernameInput);
+//
+//            ((JavascriptExecutor) driver).executeScript(
+//                "arguments[0].classList.remove('input_error');", usernameInput);
+//
+//            ((JavascriptExecutor) driver).executeScript(
+//                "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", usernameInput);
 
             PageFactory.initElements(driver, this);
 
             String value = usernameInput.getAttribute("value");
             logger.info("Username value after clearing: [" + value + "]");
+
             takeScreenshot("username_cleared");
-            
+
             if (!value.isEmpty()) {
                 logger.warn("Username field is not empty after clearing!");
             }
@@ -70,14 +81,24 @@ public class LoginPage extends BasePage {
     public LoginPage clearPassword() {
         try {
 
-            ((JavascriptExecutor) driver).executeScript("arguments[0].value = '';", passwordInput);
-            
+            passwordInput.clear();
+
+//            ((JavascriptExecutor) driver).executeScript(
+//                "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input'));", passwordInput);
+//
+//            ((JavascriptExecutor) driver).executeScript(
+//                "arguments[0].classList.remove('input_error');", passwordInput);
+//
+//
+//            ((JavascriptExecutor) driver).executeScript(
+//                "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", passwordInput);
 
             PageFactory.initElements(driver, this);
-            
+
 
             String value = passwordInput.getAttribute("value");
             logger.info("Password value after clearing: [" + value + "]");
+
             takeScreenshot("password_cleared");
             
             if (!value.isEmpty()) {
@@ -86,6 +107,11 @@ public class LoginPage extends BasePage {
         } catch (Exception e) {
             logger.error("Error clearing password: " + e.getMessage());
         }
+        return this;
+    }
+
+    public LoginPage refreshPage() {
+        driver.navigate().refresh();
         return this;
     }
 
@@ -98,32 +124,32 @@ public class LoginPage extends BasePage {
         try {
 
             takeScreenshot("before_login_click");
-            
+
 
             logger.info("Before clicking login - Username value: [" + usernameInput.getAttribute("value") + "]");
             logger.info("Before clicking login - Password value: [" + passwordInput.getAttribute("value") + "]");
-            
+
 
             PageFactory.initElements(driver, this);
-            
+
 
             waitForElementToBeClickable(loginButton);
-            
+
 
             click(loginButton);
             logger.info("Clicked login button expecting error");
-            
+
 
             takeScreenshot("after_login_click");
-            
+
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOf(errorMessage));
-            
+
 
             String errorText = errorMessage.getText();
             logger.info("Error message displayed: [" + errorText + "]");
-            
+
 
             takeScreenshot("error_message");
         } catch (Exception e) {
@@ -132,6 +158,7 @@ public class LoginPage extends BasePage {
         }
         return this;
     }
+
 
     public String getErrorMessage() {
         try {

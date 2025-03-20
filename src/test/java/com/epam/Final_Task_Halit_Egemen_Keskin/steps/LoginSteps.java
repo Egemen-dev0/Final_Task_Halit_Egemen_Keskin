@@ -70,6 +70,12 @@ public class LoginSteps {
         loginPage = loginPage.clickLoginButtonExpectingError();
     }
 
+    @Then("I refresh the page because the DOM is not updating the value")
+    public void iRefreshThePage() {
+        logger.info("Refreshing the page");
+        loginPage.refreshPage();
+    }
+
     @Then("I should see the error message {string}")
     public void iShouldSeeTheErrorMessage(String expectedErrorMessage) {
         String actualErrorMessage = loginPage.getErrorMessage();
