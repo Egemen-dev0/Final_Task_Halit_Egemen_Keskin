@@ -16,14 +16,14 @@ public class LoginWithEmptyCredentialsTest extends BaseTest {
         // Given I am on the login page with fresh state
         LoginPage loginPage = new LoginPage(driver).open();
         
-        /* ORIGINAL APPROACH THAT DIDN'T WORK - Kept for reference
+       //  ORIGINAL APPROACH THAT DIDN'T WORK - Kept for reference
         // When I enter and clear username and password
         loginPage.enterUsername("test_user")
                 .enterPassword("test_password")
                 .clearUsername()
                 .clearPassword()
                 .clickLoginButtonExpectingError();
-        */
+
         
         // Click login directly without entering anything
         loginPage.clickLoginButtonExpectingError();

@@ -7,6 +7,7 @@ import org.openqa.selenium.WebDriver;
 import org.testng.annotations.AfterMethod;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Parameters;
+import org.testng.annotations.Optional;
 
 public class BaseTest {
     protected WebDriver driver;
@@ -14,7 +15,7 @@ public class BaseTest {
 
     @BeforeMethod
     @Parameters("browser")
-    public void setUp(String browser) {
+    public void setUp(@Optional("chrome") String browser) {
         logger.info("Starting test with browser: " + browser);
         driver = DriverManager.getDriver(browser);
     }
@@ -24,4 +25,4 @@ public class BaseTest {
         logger.info("Finishing test");
         DriverManager.quitDriver();
     }
-} 
+}
