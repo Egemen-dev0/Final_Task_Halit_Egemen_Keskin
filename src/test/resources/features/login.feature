@@ -3,12 +3,11 @@ Feature: SauceDemo Login Functionality
   Scenario: Login with empty credentials
     Given I am on the login page
     # Original approach that didn't work:
-     When I enter "test_user" in the username field
-     And I enter "test_password" in the password field
-     And I clear the username field
-     And I clear the password field
-     Then I refresh the page because the DOM is not updating the value
-    # And I click the login button expecting error
+    When I enter "test_user" in the username field
+    And I enter "test_password" in the password field
+    And I clear the username field
+    And I clear the password field
+    Then I refresh the page because the DOM is not updating the value
     When I click the login button expecting error
     Then I should see the error message "Epic sadface: Username is required"
 
@@ -16,8 +15,8 @@ Feature: SauceDemo Login Functionality
     Given I am on the login page
     When I enter "standard_user" in the username field
     # Original approach that didn't work:
-   # And I enter "secret_sauce" in the password field
-   # And I clear the password field
+    # And I enter "secret_sauce" in the password field
+    # And I clear the password field
     And I click the login button expecting error
     Then I should see the error message "Epic sadface: Password is required"
 

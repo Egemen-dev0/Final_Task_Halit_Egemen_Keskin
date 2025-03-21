@@ -14,7 +14,8 @@ public class DashboardPage extends BasePage {
     }
 
     public String getTitle() {
-        return driver.getTitle();
+
+        return driverAdapter.getTitle();
     }
 
     public boolean isLogoDisplayed() {

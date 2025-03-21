@@ -1,5 +1,8 @@
 package com.epam.Final_Task_Halit_Egemen_Keskin.page;
 
+import com.epam.Final_Task_Halit_Egemen_Keskin.adapter.WebDriverAdapter;
+import com.epam.Final_Task_Halit_Egemen_Keskin.adapter.WebDriverAdapterImpl;
+import com.epam.Final_Task_Halit_Egemen_Keskin.decorator.WebDriverDecorator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.WebDriver;
@@ -17,10 +20,15 @@ import java.time.Duration;
 
 public abstract class BasePage {
     protected WebDriver driver;
+    protected WebDriverAdapter driverAdapter;
+    protected WebDriverDecorator driverDecorator;
     protected WebDriverWait wait;
     protected static final Logger logger = LogManager.getLogger();
 
     public BasePage(WebDriver driver) {
+
+        this.driverDecorator = new WebDriverDecorator(driver);
+        this.driverAdapter = new WebDriverAdapterImpl(this.driverDecorator);
         this.driver = driver;
         this.wait = new WebDriverWait(driver, Duration.ofSeconds(10));
         PageFactory.initElements(driver, this);
@@ -35,59 +43,37 @@ public abstract class BasePage {
     }
 
     protected void click(WebElement element) {
-        waitForElementToBeClickable(element);
-        element.click();
-        logger.info("Clicked on element: " + element);
+        driverAdapter.click(element);
     }
 
     protected void sendKeys(WebElement element, String text) {
-        waitForElementToBeVisible(element);
-        element.clear();
-        element.sendKeys(text);
-        logger.info("Entered text '" + text + "' into element: " + element);
+        driverAdapter.type(element, text);
     }
 
     protected void clear(WebElement element) {
-        waitForElementToBeVisible(element);
-        element.clear();
-        element.sendKeys("");
+        driverAdapter.clear(element);
         
         /* 
          * The standard WebElement.clear() sometimes doesn't completely clear inputs on modern websites.
-         * This is because some sites have JavaScript that manages input state or form data
-         * beyond the standard DOM input value.
-         *
-         * Issues encountered with clearing fields on SauceDemo site:
-         * 1. Fields appear to be cleared but then get repopulated with previous values before submission
-         * 2. JavaScript events might be restoring field values from browser autofill
-         * 3. WebElements can become stale after clearing them with JavaScript
-         *
-         * The approach below using JavascriptExecutor sometimes works better than the standard clear(),
-         * but even this had issues in our current setup.
+         * For more robust clearing, we can use JavaScript through our decorator
          */
         try {
-            if (driver instanceof JavascriptExecutor) {
-                ((JavascriptExecutor) driver).executeScript("arguments[0].value = '';", element);
-            } else {
-                logger.warn("Driver does not support JavaScript execution");
-            }
+            driverDecorator.executeScript("arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input'));", element);
+            driverDecorator.executeScript("arguments[0].classList.remove('input_error');", element);
+            driverDecorator.executeScript("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", element);
         } catch (Exception e) {
             logger.warn("Failed to clear element using JavaScript: " + e.getMessage());
         }
-        logger.info("Cleared element: " + element);
     }
 
     protected String getText(WebElement element) {
-        waitForElementToBeVisible(element);
-        String text = element.getText();
-        logger.info("Got text '" + text + "' from element: " + element);
-        return text;
+
+        return driverAdapter.getText(element);
     }
 
     protected String getTitle() {
-        String title = driver.getTitle();
-        logger.info("Got page title: " + title);
-        return title;
+
+        return driverAdapter.getTitle();
     }
 
     protected void takeScreenshot(String name) {

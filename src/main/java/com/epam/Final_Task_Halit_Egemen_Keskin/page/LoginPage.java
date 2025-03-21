@@ -1,6 +1,5 @@
 package com.epam.Final_Task_Halit_Egemen_Keskin.page;
 
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.FindBy;
@@ -8,8 +7,6 @@ import org.openqa.selenium.support.How;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.Keys;
 
 import java.time.Duration;
 
@@ -33,35 +30,25 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage open() {
-        driver.get(URL);
+        driverAdapter.navigateTo(URL);
         logger.info("Opened login page: " + URL);
         return this;
     }
 
     public LoginPage enterUsername(String username) {
-        sendKeys(usernameInput, username);
+        driverAdapter.type(usernameInput, username);
         return this;
     }
 
     public LoginPage enterPassword(String password) {
-        sendKeys(passwordInput, password);
+        driverAdapter.type(passwordInput, password);
         return this;
     }
 
     public LoginPage clearUsername() {
         try {
-
-           usernameInput.clear();
-
-//            ((JavascriptExecutor) driver).executeScript(
-//                "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input'));", usernameInput);
-//
-//            ((JavascriptExecutor) driver).executeScript(
-//                "arguments[0].classList.remove('input_error');", usernameInput);
-//
-//            ((JavascriptExecutor) driver).executeScript(
-//                "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", usernameInput);
-
+            clear(usernameInput);
+            
             PageFactory.initElements(driver, this);
 
             String value = usernameInput.getAttribute("value");
@@ -80,21 +67,10 @@ public class LoginPage extends BasePage {
 
     public LoginPage clearPassword() {
         try {
-
-            passwordInput.clear();
-
-//            ((JavascriptExecutor) driver).executeScript(
-//                "arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input'));", passwordInput);
-//
-//            ((JavascriptExecutor) driver).executeScript(
-//                "arguments[0].classList.remove('input_error');", passwordInput);
-//
-//
-//            ((JavascriptExecutor) driver).executeScript(
-//                "arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", passwordInput);
-
+            clear(passwordInput);
+            logger.info("Cleared count to 10 mon ami");
+            Thread.sleep(1000);
             PageFactory.initElements(driver, this);
-
 
             String value = passwordInput.getAttribute("value");
             logger.info("Password value after clearing: [" + value + "]");
@@ -111,45 +87,34 @@ public class LoginPage extends BasePage {
     }
 
     public LoginPage refreshPage() {
-        driver.navigate().refresh();
+        driverDecorator.navigate().refresh();
         return this;
     }
 
     public DashboardPage clickLoginButton() {
-        click(loginButton);
+        driverAdapter.click(loginButton);
         return new DashboardPage(driver);
     }
 
     public LoginPage clickLoginButtonExpectingError() {
         try {
-
             takeScreenshot("before_login_click");
-
-
+            
             logger.info("Before clicking login - Username value: [" + usernameInput.getAttribute("value") + "]");
             logger.info("Before clicking login - Password value: [" + passwordInput.getAttribute("value") + "]");
 
-
             PageFactory.initElements(driver, this);
-
-
-            waitForElementToBeClickable(loginButton);
-
-
-            click(loginButton);
+            
+            driverAdapter.click(loginButton);
             logger.info("Clicked login button expecting error");
 
-
             takeScreenshot("after_login_click");
-
 
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOf(errorMessage));
 
-
             String errorText = errorMessage.getText();
             logger.info("Error message displayed: [" + errorText + "]");
-
 
             takeScreenshot("error_message");
         } catch (Exception e) {
@@ -159,24 +124,18 @@ public class LoginPage extends BasePage {
         return this;
     }
 
-
     public String getErrorMessage() {
         try {
-
             logger.info("Attempting to get error message");
             
-
             WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
             wait.until(ExpectedConditions.visibilityOf(errorMessage));
             
-
             takeScreenshot("before_getting_error_text");
             
-
-            String errorText = errorMessage.getText();
+            String errorText = driverAdapter.getText(errorMessage);
             logger.info("Retrieved error message: [" + errorText + "]");
             
-
             takeScreenshot("error_message_text_" + errorText.replaceAll("[^a-zA-Z0-9]", "_"));
             
             return errorText;
