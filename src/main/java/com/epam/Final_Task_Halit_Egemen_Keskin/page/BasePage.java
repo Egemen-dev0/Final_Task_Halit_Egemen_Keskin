@@ -5,14 +5,11 @@ import com.epam.Final_Task_Halit_Egemen_Keskin.adapter.WebDriverAdapterImpl;
 import com.epam.Final_Task_Halit_Egemen_Keskin.decorator.WebDriverDecorator;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.WebElement;
+import org.openqa.selenium.*;
 import org.openqa.selenium.support.PageFactory;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.openqa.selenium.JavascriptExecutor;
-import org.openqa.selenium.TakesScreenshot;
-import org.openqa.selenium.OutputType;
+
 import java.io.File;
 import java.nio.file.Files;
 
@@ -51,18 +48,91 @@ public abstract class BasePage {
     }
 
     protected void clear(WebElement element) {
+        // First try the standard clear method via adapter
         driverAdapter.clear(element);
         
         /* 
-         * The standard WebElement.clear() sometimes doesn't completely clear inputs on modern websites.
-         * For more robust clearing, we can use JavaScript through our decorator
+         * For more robust clearing on modern websites, we'll use an enhanced JavaScript approach
+         * that handles different types of form fields and ensures both the value property 
+         * and value attribute are cleared, while also preventing autofill
          */
         try {
-            driverDecorator.executeScript("arguments[0].value = ''; arguments[0].dispatchEvent(new Event('input'));", element);
-            driverDecorator.executeScript("arguments[0].classList.remove('input_error');", element);
-            driverDecorator.executeScript("arguments[0].dispatchEvent(new Event('input', { bubbles: true }));", element);
+            // More comprehensive JavaScript to clear input fields with advanced techniques
+            String script = 
+                "const field = arguments[0];" +
+                "const fieldType = field.type;" +
+                
+                "// Find the parent form to disable autocomplete at form level" +
+                "let form = field.form;" +
+                "if (form) {" +
+                "    form.setAttribute('autocomplete', 'off');" +
+                "}" +
+                
+                "// Store original name to restore later if needed" +
+                "const originalName = field.getAttribute('name');" +
+                "if (originalName) {" +
+                "    field.setAttribute('data-original-name', originalName);" +
+                "    // Temporarily change the name to prevent browser autofill" +
+                "    field.setAttribute('name', originalName + '-prevent');" +
+                "}" +
+                
+                "// Disable autocomplete on the field" +
+                "field.setAttribute('autocomplete', 'off');" +
+                "field.setAttribute('autocapitalize', 'off');" +
+                "field.setAttribute('autocorrect', 'off');" +
+                
+                "if (fieldType === 'text' || fieldType === 'email' || fieldType === 'password' || fieldType === 'textarea') {" +
+                "    field.value = '';" + // Clear the value property
+                "    field.setAttribute('value', '');" + // Clear the value attribute
+                "    // Create and dispatch multiple events to ensure change is registered" +
+                "    field.dispatchEvent(new Event('input', { bubbles: true }));" +
+                "    field.dispatchEvent(new Event('change', { bubbles: true }));" +
+                "    field.dispatchEvent(new MouseEvent('click'));" +
+                "} else if (fieldType === 'checkbox' || fieldType === 'radio') {" +
+                "    field.checked = false;" +
+                "    field.removeAttribute('checked');" +
+                "} else if (fieldType === 'select-one') {" +
+                "    field.selectedIndex = 0;" +
+                "}" +
+                
+                "// Remove any error styling classes" +
+                "field.classList.remove('input_error');" +
+                
+                "// Create field properties to avoid them being captured by browser" +
+                "Object.defineProperty(field, 'value', {" +
+                "    get: function() { return this.getAttribute('data-value') || ''; }," +
+                "    set: function(val) { this.setAttribute('data-value', val || ''); }," +
+                "    configurable: true" +
+                "});" +
+                
+                "// Return debugging information" +
+                "return {" +
+                "    value: field.value," +
+                "    autocomplete: field.getAttribute('autocomplete')," +
+                "    name: field.getAttribute('name')," +
+                "    formAutocomplete: form ? form.getAttribute('autocomplete') : 'no-form'" +
+                "};";
+    
+            Object result = driverDecorator.executeScript(script, element);
+            logger.info("Field after enhanced clearing: " + result);
+            
+            // Wait a brief moment to ensure changes are applied
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+            }
+            
+            // Refresh element reference to avoid stale element issues
+            PageFactory.initElements(driver, this);
+            
+            // Verify the element value is truly empty
+            String verifyScript = "return arguments[0].value || arguments[0].getAttribute('value');";
+            String verifiedValue = (String) driverDecorator.executeScript(verifyScript, element);
+            logger.info("Verified field value after clearing: [" + verifiedValue + "]");
+            
         } catch (Exception e) {
-            logger.warn("Failed to clear element using JavaScript: " + e.getMessage());
+            logger.warn("Failed to clear element using enhanced JavaScript: " + e.getMessage(), e);
         }
     }
 
